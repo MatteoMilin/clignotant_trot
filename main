@@ -1,21 +1,15 @@
 // C code for arduino
 
 // variables
-// boutons
 const int right_bouton = 2;
 const int left_bouton = 3;
-// leds
 const int right_ledPin = 6;
 const int left_ledPin = 7;
-// delay
 const unsigned long blink_delay = 350;
-// led statement
 bool right_ledStatus = false; 
 bool left_ledStatus = false; 
-// switch
 volatile bool right_shouldBlink = false;
 volatile bool left_shouldBlink = false;
-// timer
 unsigned long right_nextToggle = 0;
 unsigned long left_nextToggle = 0;
 
