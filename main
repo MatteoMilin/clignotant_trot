@@ -1,0 +1,40 @@
+// C++ code
+//
+int right_led = 6;
+int left_led = 7;
+int right_button;
+int left_button;
+int right = -1; // low statement
+int left = -1;
+unsigned long prevMillis = 0;
+const long inter = 400;
+
+void setup()
+{
+  pinMode(6, OUTPUT);
+  pinMode(7, OUTPUT);
+  pinMode(12, INPUT);
+  pinMode(13, INPUT);
+  Serial.begin(9600);
+}
+
+void loop()
+{
+  right_button = digitalRead(12);
+  left_button = digitalRead(13);
+  if (left_button == HIGH) {
+    left = 1;
+    unsigned long currentMillis = millis();
+    //while (left_button == HIGH)
+    if (currentMillis - prevMillis >= inter) {
+		Serial.print("ok\n");
+      	digitalWrite(left_button, HIGH);
+      	prevMillis = currentMillis;
+    }
+    if (currentMillis - prevMillis >= inter) {
+		Serial.print("ok\n");
+      	digitalWrite(left_button, LOW);
+      	prevMillis = currentMillis;
+    }
+  }
+}
