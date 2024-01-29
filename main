@@ -1,40 +1,70 @@
-// C++ code
-//
-int right_led = 6;
-int left_led = 7;
-int right_button;
-int left_button;
-int right = -1; // low statement
-int left = -1;
-unsigned long prevMillis = 0;
-const long inter = 400;
+// C code for arduino
 
-void setup()
-{
-  pinMode(6, OUTPUT);
-  pinMode(7, OUTPUT);
-  pinMode(12, INPUT);
-  pinMode(13, INPUT);
-  Serial.begin(9600);
+// variables
+// boutons
+const int right_bouton = 2;
+const int left_bouton = 3;
+// leds
+const int right_ledPin = 6;
+const int left_ledPin = 7;
+// delay
+const unsigned long blink_delay = 350;
+// led statement
+bool right_ledStatus = false; 
+bool left_ledStatus = false; 
+// switch
+volatile bool right_shouldBlink = false;
+volatile bool left_shouldBlink = false;
+// timer
+unsigned long right_nextToggle = 0;
+unsigned long left_nextToggle = 0;
+
+// switch functions
+void right_toggleBlink(void) {
+  right_shouldBlink = !right_shouldBlink;
+}
+void left_toggleBlink(void) {
+  left_shouldBlink = !left_shouldBlink;
 }
 
-void loop()
-{
-  right_button = digitalRead(12);
-  left_button = digitalRead(13);
-  if (left_button == HIGH) {
-    left = 1;
-    unsigned long currentMillis = millis();
-    //while (left_button == HIGH)
-    if (currentMillis - prevMillis >= inter) {
-		Serial.print("ok\n");
-      	digitalWrite(left_button, HIGH);
-      	prevMillis = currentMillis;
-    }
-    if (currentMillis - prevMillis >= inter) {
-		Serial.print("ok\n");
-      	digitalWrite(left_button, LOW);
-      	prevMillis = currentMillis;
-    }
+// setup arduino
+void setup(void) {
+  pinMode(right_bouton, INPUT);
+  pinMode(left_bouton, INPUT);
+  pinMode(right_ledPin, OUTPUT);
+  pinMode(left_ledPin, OUTPUT);
+  attachInterrupt(digitalPinToInterrupt(right_bouton), right_toggleBlink, FALLING);
+  attachInterrupt(digitalPinToInterrupt(left_bouton), left_toggleBlink, FALLING);
+}
+
+// right gestion
+void loop_right(void) {
+   if (!right_shouldBlink) {
+     digitalWrite(right_ledPin, LOW);
+     return;
+   }
+   if (millis() > right_nextToggle) {
+    	right_nextToggle = millis() + blink_delay;
+     right_ledStatus = !right_ledStatus;
+   }
+   digitalWrite(right_ledPin, right_ledStatus ? HIGH : LOW);  
+}
+
+// left gestion
+void loop_left(void) {
+  if (!left_shouldBlink) {
+    digitalWrite(left_ledPin, LOW);
+    return;
   }
+  if (millis() > left_nextToggle) {
+   	left_nextToggle = millis() + blink_delay;
+    left_ledStatus = !left_ledStatus;
+  }
+  digitalWrite(left_ledPin, left_ledStatus ? HIGH : LOW);
+}
+
+// main
+void loop(void) {
+  loop_right();
+  loop_left();
 }
